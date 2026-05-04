@@ -36,8 +36,8 @@ Other models (U6, U7 WiFi 6/7 series) fall back to the controller's built-in upg
 ## Requirements
 
 - Python 3.11+
-- UniFi controller with a **local admin account** (cloud/SSO accounts with 2FA return HTTP 499)
-- Network access from your machine to the controller
+- UniFi controller with a **local admin account** — see [Creating a local admin](#creating-a-local-admin) below
+- Network access from your machine to the controller (same LAN or VPN)
 
 ## Installation
 
@@ -72,7 +72,13 @@ Add `--yes` to skip the confirmation prompt.
 
 ## Manual mode
 
-Copy the example config and fill in your device MACs:
+First, find the MAC addresses of your devices:
+
+```bash
+python -m unifi_fw inventory
+```
+
+Copy the example config and fill in the MACs from the inventory output:
 
 ```bash
 cp firmware.example.yaml firmware.yaml
@@ -120,11 +126,12 @@ python -m unifi_fw upgrade     # run upgrade (requires firmware.yaml)
 | `UNIFI_VERIFY_TLS` | — | `false` | Set `true` to verify TLS certificate |
 | `UNIFI_NETWORK_PREFIX` | — | `/proxy/network` | API prefix for UniFi OS 4.x. Use empty string for legacy controllers |
 
-Store them in a `.env` file (already in `.gitignore`):
+**Loading from a file** — the tool does not auto-load `.env`. Copy the example and source it manually:
 
 ```bash
 cp .env.example .env
-# fill in your values
+# fill in your values, then:
+set -a && source .env && set +a
 ```
 
 ## Development
@@ -146,6 +153,30 @@ mypy src/unifi_fw/ --strict
 - Firmware SHA-256 is verified before the upgrade command is sent.
 - Each device is upgraded sequentially. The next device starts only after the previous one is back online.
 - Upgrade times out after 15 minutes per device.
+
+## Creating a local admin
+
+Cloud/SSO accounts (those you log in to ui.com with) require 2FA and cannot be used here — the API returns HTTP 499.
+
+You need a **local admin** account created directly on the controller:
+
+1. Open UniFi Network in your browser (`https://192.168.1.1`)
+2. Go to **Settings → Admins & Users → Invite Admin**
+3. Choose **Local Access Only**
+4. Set a username and password
+5. Use those credentials in `UNIFI_USER` / `UNIFI_PASS`
+
+## Troubleshooting
+
+**`Login failed [499]`** — you are using a cloud account with 2FA. Create a local admin account (see above).
+
+**`Login failed [400]`** — wrong username or password.
+
+**`Connection error`** — check that `UNIFI_HOST` is reachable. The tool must run on the same network as the controller (or connected via VPN).
+
+**Device stuck in `upgrading` state** — wait up to 15 minutes. If it times out, the device likely rejected the firmware (wrong model/platform). Check that the firmware file matches the device model.
+
+**`UNIFI_NETWORK_PREFIX`** — if you get 404 on all API calls and your controller is a self-hosted Network Application (not UniFi OS), set `UNIFI_NETWORK_PREFIX=` (empty string).
 
 ## License
 
