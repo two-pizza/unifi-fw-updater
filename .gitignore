@@ -1,0 +1,19 @@
+# secrets & local config
+.env
+firmware.yaml
+
+# python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+
+# tools
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+
+# logs
+logs/

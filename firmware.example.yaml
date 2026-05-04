@@ -1,0 +1,10 @@
+devices:
+  - mac: "aa:bb:cc:dd:ee:01"   # AP name / location
+    model: "U7PG2"             # UAP-AC-Pro
+    firmware_url: "http://YOUR_LOCAL_IP:8080/BZ.qca956x_6.8.2+15592.bin"
+    sha256: "3cf8ebe793f74f5ce4aa81131f03f4a4fa9d1b0b0ed915c9ddfa9fac9297474e"
+
+  - mac: "aa:bb:cc:dd:ee:02"   # another AP
+    model: "U7LT"              # UAP-AC-Lite
+    firmware_url: "http://YOUR_LOCAL_IP:8080/BZ.qca956x_6.8.2+15592.bin"
+    sha256: "3cf8ebe793f74f5ce4aa81131f03f4a4fa9d1b0b0ed915c9ddfa9fac9297474e"
